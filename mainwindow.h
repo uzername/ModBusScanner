@@ -5,6 +5,9 @@
 #include <QModbusDataUnit>
 
 #include "dialogcomport.h"
+#include "dialogrecord.h"
+
+#include "mymodel.h"
 class QModbusClient;
 
 namespace Ui {
@@ -23,6 +26,9 @@ public:
     QModbusDataUnit *constructReadRequest(QModbusDataUnit::RegisterType inp_regtype);
     QModbusDataUnit *constructWriteRequest(QModbusDataUnit::RegisterType inp_regtype);
 
+    MyModel myModel;
+    QStringList theReadList; //names of register types which might be read.
+
     void logToTextBox(QString goodMsgForDisplay);
 private:
     Ui::MainWindow *ui;
@@ -39,6 +45,7 @@ private slots:
 
     void readReady();
     void on_pushButtonWrite_clicked();
+    void on_pushButtonAdd_clicked();
 };
 
 #endif // MAINWINDOW_H

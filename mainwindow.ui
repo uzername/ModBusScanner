@@ -51,9 +51,16 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="pushButtonRemove">
              <property name="text">
               <string>Remove</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>Run Scanning</string>
              </property>
             </widget>
            </item>
@@ -87,7 +94,7 @@
    </property>
    <widget class="QMenu" name="menuCOM">
     <property name="title">
-     <string>COM-порт ПК</string>
+     <string>Параметри</string>
     </property>
     <addaction name="actionConnect"/>
    </widget>
@@ -96,7 +103,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionConnect">
    <property name="text">
-    <string>Параметри</string>
+    <string>Підключення</string>
    </property>
   </action>
  </widget>

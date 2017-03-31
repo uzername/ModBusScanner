@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "mymodel.h"
+
 #include <QModbusRtuSerialMaster>
 #include <QDateTime>
 #include <QFontDatabase>
@@ -11,7 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     AllCOMPorts(new QVector<DialogCOMPort::knownCOMports>()),
     modbusDevice(nullptr),
-    deviceConnected(false)
+    deviceConnected(false),
+    myModel(0)
 {
     ui->setupUi(this);
 
@@ -22,9 +25,18 @@ MainWindow::MainWindow(QWidget *parent) :
     storedSettings.responseTime = 5000;
     storedSettings.numberOfRetries = 3;
     storedSettings.portAddr = "COM9";
-/*
-    QStringList theReadList;
+    //setting table
+    //myModel = new MyModel(0);
+    myModel.columnHeaders.append(tr("Пристрій \n адреса"));
+    myModel.columnHeaders.append(tr("Тип \n структури даних"));
+    myModel.columnHeaders.append(tr("Адреса \n структури даних"));
+    myModel.columnHeaders.append(tr("Дані"));
+    ui->tableView->setModel( &myModel );
+
+
+    theReadList = QStringList();
     theReadList<<"CoilFlag"<<"Discrette Input"<<"HoldingRegister"<<"InputRegister";
+    /*
     ui->comboBoxType->addItems(theReadList);
     ui->comboBoxType->setCurrentIndex(2);
     QStringList theWriteList;
@@ -317,4 +329,27 @@ void MainWindow::on_pushButtonWrite_clicked()
         statusBar()->showMessage(tr("Write error: ") + modbusDevice->errorString(), 5000);
     }
 */
+}
+//append item to table and listener
+void MainWindow::on_pushButtonAdd_clicked()  {
+    //open dialog
+    DialogRecord* newRecordDialog = new DialogRecord(this);
+    newRecordDialog->setWindowFlags(newRecordDialog->windowFlags() & ~Qt::WindowContextHelpButtonHint & ~Qt::WindowCloseButtonHint);
+    newRecordDialog->exec();
+    if ( (newRecordDialog->acceptButtonClicked == true)&&(newRecordDialog->cancelButtonClicked == false) ) {
+        //this->myModel.insertRow(this->myModel.rowCount());
+        //int lastRow = this->myModel.rowCount();
+        //this->myModel.setData(/*this->myModel.index(lastRow,1)*/new QModelIndex(lastRow, 0),"",Qt::DisplayRole);
+
+        unsigned int deviceAddrLocal =newRecordDialog->deviceAddress;
+        QString regType = newRecordDialog->dataStructType;
+        unsigned int dataStructAddrLocal = newRecordDialog->dataStructAddress;
+
+        this->myModel.brandNewAppendData(deviceAddrLocal, regType, dataStructAddrLocal);
+
+    } else {
+        if ( (newRecordDialog->acceptButtonClicked == false)&&(newRecordDialog->cancelButtonClicked == true) ) {
+            statusBar()->showMessage("record -- canceled",5000);
+        }
+    }
 }

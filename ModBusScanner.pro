@@ -26,12 +26,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     dialogcomport.cpp \
-    dialogrecord.cpp
+    dialogrecord.cpp \
+    mymodel.cpp \
+    mypoolingclass.cpp
 
 HEADERS  += mainwindow.h \
     dialogcomport.h \
-    comportmanager.h \
-    dialogrecord.h
+    dialogrecord.h \
+    mymodel.h \
+    processingmanager.h \
+    mypoolingclass.h
 
 FORMS    += mainwindow.ui \
     dialogcomport.ui \
