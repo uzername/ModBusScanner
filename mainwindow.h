@@ -40,6 +40,7 @@ public:
     QTimer *poolingTimer;
     unsigned int poolingStdTimeout;
 
+
 private:
     Ui::MainWindow *ui;
     QModbusClient *modbusDevice;
@@ -59,6 +60,9 @@ private slots:
     void on_pushButtonAdd_clicked();
     void on_pushButton_clicked();
     void timerHit();
+    // these slots process calls from qthread
+    void externalLogRequest(QString externalLogLine);
+    void processPoolingFinished();
 };
 
 #endif // MAINWINDOW_H

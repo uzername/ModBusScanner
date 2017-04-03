@@ -40,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(poolingTimer, SIGNAL(timeout()) , this, SLOT(timerHit()));
     poolingProcessor = new MyPoolingClass("A");
 
+    connect(poolingProcessor, SIGNAL(sendStringToLog(QString)), this, SLOT(externalLogRequest(QString)) );
+    connect(poolingProcessor, SIGNAL(handmadeFinished()), this, SLOT(processPoolingFinished() ) );
+    //this list is also used in MyPoolingClass
     theReadList = QStringList();
     theReadList<<"CoilFlag"<<"Discrette Input"<<"HoldingRegister"<<"InputRegister";
     /*
@@ -201,12 +204,13 @@ void MainWindow::logToTextBox(QString goodMsgForDisplay)
 }
 
 void MainWindow::timerHit()  {
+    //start processing. It may take long time, so a thread might be required
     logToTextBox(tr("Настав час таймера."));
     if (processingPerformed == true) {
         logToTextBox(tr("Обробка комірок ще не завершена. Сигнал таймера пропущено"));
     } else {
-        //start processing. It may take long time, so a thread might be required
-        //queryEntriesFromTable();
+        //good time to recall scanning
+        poolingProcessor->start();
     }
 }
 
@@ -392,15 +396,28 @@ void MainWindow::on_pushButton_clicked()  {
         poolingProcessor->initPooling(this->modbusDevice, &(this->myModel));
 
         poolingTimer->start();
+        poolingProcessor->start();
+
         this->ui->pushButton->setText("Stop Scanning");
         this->processingPerformed = true;
     } else {
         //delete poolingProcessor;
         //better not to play with deleting QThread
         poolingTimer->stop();
+        // https://forum.qt.io/topic/20539/what-is-the-correct-way-to-stop-qthread/3
+        poolingProcessor->poolingPerformed = true;
         this->ui->pushButton->setText("Start Scanning");
         logToTextBox(tr("Опитування зупинено користувачем"));
         this->processingPerformed = false;
     }
 
+}
+
+void MainWindow::externalLogRequest(QString externalLogLine) {
+    logToTextBox(externalLogLine);
+}
+
+void MainWindow::processPoolingFinished()  {
+    logToTextBox(tr("Тред оголосив про завершення обробки"));
+    processingPerformed = false;
 }

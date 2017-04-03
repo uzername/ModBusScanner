@@ -23,6 +23,14 @@ public:
     QVector<QString> columnHeaders;
     QVector<rowDataItm> dataItems;
     void brandNewAppendData(unsigned int deviceAddrInp, QString structTypeInp, unsigned int structAddrInp);
+    /**
+     * @brief rowDataItmToString
+     * @return String representation of rowDataItm
+     */
+    static QString rowDataItmToString(rowDataItm devicerequest) {
+        QString lineOutput = QString("device: %1 d; reg.type: %2 ; reg.address: %3 d; current value: %4 d").arg(devicerequest.deviceAddress, 10).arg(devicerequest.dataStructType).arg(devicerequest.dataStructAddress, 10).arg(devicerequest.dataStructData, 10);
+        return lineOutput;
+    }
 };
 
 #endif // MYMODEL_H
