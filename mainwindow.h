@@ -3,11 +3,14 @@
 
 #include <QMainWindow>
 #include <QModbusDataUnit>
+#include <QTimer>
 
 #include "dialogcomport.h"
 #include "dialogrecord.h"
 
 #include "mymodel.h"
+
+#include "mypoolingclass.h"
 class QModbusClient;
 
 namespace Ui {
@@ -30,6 +33,13 @@ public:
     QStringList theReadList; //names of register types which might be read.
 
     void logToTextBox(QString goodMsgForDisplay);
+
+    bool processingPerformed;
+    MyPoolingClass *poolingProcessor;
+    /*see sect. 2.3 A Clock inside a Table Cell in http://doc.qt.io/qt-5.8/modelview.html */
+    QTimer *poolingTimer;
+    unsigned int poolingStdTimeout;
+
 private:
     Ui::MainWindow *ui;
     QModbusClient *modbusDevice;
@@ -39,6 +49,7 @@ private:
     bool recalculateCOMPorts;
 
     bool deviceConnected;
+
 private slots:
     void openComPortDialog();
     void on_pushButtonRead_clicked();
@@ -46,6 +57,8 @@ private slots:
     void readReady();
     void on_pushButtonWrite_clicked();
     void on_pushButtonAdd_clicked();
+    void on_pushButton_clicked();
+    void timerHit();
 };
 
 #endif // MAINWINDOW_H

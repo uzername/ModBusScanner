@@ -33,6 +33,12 @@ MainWindow::MainWindow(QWidget *parent) :
     myModel.columnHeaders.append(tr("Дані"));
     ui->tableView->setModel( &myModel );
 
+    processingPerformed = false;
+    poolingStdTimeout = 4000;
+    poolingTimer = new QTimer();
+    poolingTimer->setInterval(poolingStdTimeout);
+    connect(poolingTimer, SIGNAL(timeout()) , this, SLOT(timerHit()));
+    poolingProcessor = new MyPoolingClass("A");
 
     theReadList = QStringList();
     theReadList<<"CoilFlag"<<"Discrette Input"<<"HoldingRegister"<<"InputRegister";
@@ -194,6 +200,16 @@ void MainWindow::logToTextBox(QString goodMsgForDisplay)
     //this->ui->textEditMain->append("<font face=\"Courier\">"+dateStamp+goodMsgForDisplay+"</font>");
 }
 
+void MainWindow::timerHit()  {
+    logToTextBox(tr("Настав час таймера."));
+    if (processingPerformed == true) {
+        logToTextBox(tr("Обробка комірок ще не завершена. Сигнал таймера пропущено"));
+    } else {
+        //start processing. It may take long time, so a thread might be required
+        //queryEntriesFromTable();
+    }
+}
+
 //call read function
 void MainWindow::on_pushButtonRead_clicked()
 {
@@ -332,6 +348,12 @@ void MainWindow::on_pushButtonWrite_clicked()
 }
 //append item to table and listener
 void MainWindow::on_pushButtonAdd_clicked()  {
+    //if the scanning has been started before then stop it. Actually this should be done by user, but let's do it here
+    bool scanningWasRunningBefore = this->processingPerformed;
+    //stop the scan here
+    if (scanningWasRunningBefore == true) {
+        on_pushButton_clicked();
+    }
     //open dialog
     DialogRecord* newRecordDialog = new DialogRecord(this);
     newRecordDialog->setWindowFlags(newRecordDialog->windowFlags() & ~Qt::WindowContextHelpButtonHint & ~Qt::WindowCloseButtonHint);
@@ -352,4 +374,33 @@ void MainWindow::on_pushButtonAdd_clicked()  {
             statusBar()->showMessage("record -- canceled",5000);
         }
     }
+    //start the scan after adding, if it has been running before adding rcrd
+    if (scanningWasRunningBefore == true) {
+        on_pushButton_clicked();
+    }
+}
+/*run (or stop) scanning process*/
+void MainWindow::on_pushButton_clicked()  {
+    if (this->processingPerformed == false) {
+        if (this->myModel.rowCount()==0) {
+            QMessageBox msgBox;
+            msgBox.setText(tr("Потрібен хоча б один елемент відслідковування"));
+            msgBox.exec();
+            return;
+        }
+        //poolingProcessor = new MyPoolingClass("A");
+        poolingProcessor->initPooling(this->modbusDevice, &(this->myModel));
+
+        poolingTimer->start();
+        this->ui->pushButton->setText("Stop Scanning");
+        this->processingPerformed = true;
+    } else {
+        //delete poolingProcessor;
+        //better not to play with deleting QThread
+        poolingTimer->stop();
+        this->ui->pushButton->setText("Start Scanning");
+        logToTextBox(tr("Опитування зупинено користувачем"));
+        this->processingPerformed = false;
+    }
+
 }
