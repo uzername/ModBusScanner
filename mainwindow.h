@@ -63,6 +63,7 @@ private slots:
     // these slots process calls from qthread
     void externalLogRequest(QString externalLogLine);
     void processPoolingFinished();
+    void externalReadRequest(QModbusDataUnit theUnit, unsigned int devAddr);
 };
 
 #endif // MAINWINDOW_H

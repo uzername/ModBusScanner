@@ -23,12 +23,13 @@ public:
      * we should give it capability to recover between queries. This value represents time delay in ms as int (that's how QT processes it)
      * actually it depends on baud rate (3.5 symbols), but let's keep it simple.
      */
-    int requestDelay = 100;
+    int requestDelay;
     QModbusDataUnit readRequest(MyModel::rowDataItm modelItmParm);
 signals:
     void send();
     void sendStringToLog( QString logLine );
     void handmadeFinished();
+    void delegateSendReadRequest(QModbusDataUnit immaterialRequestInp, unsigned int deviceAddress);
 private:
     MyModel *modelPtr;
     //we need pointer to modbusdevice to start polling data by given addresses (stored in MyModel instance)
@@ -37,6 +38,8 @@ private:
     void performPooling();
 
     QString name;
+public slots:
+    void readReady();
 };
 
 #endif // MYPOOLINGCLASS_H

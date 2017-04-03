@@ -193,7 +193,7 @@ QModbusDataUnit* MainWindow::constructWriteRequest(QModbusDataUnit::RegisterType
 
 void MainWindow::logToTextBox(QString goodMsgForDisplay)
 {
-
+    //qDebug(goodMsgForDisplay.toStdString().c_str());
     QString dateStamp="["+QDateTime::currentDateTime().toString(Qt::ISODateWithMs)+"]:";
     QTextCharFormat format;
     const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
@@ -265,7 +265,7 @@ void MainWindow::readReady() {
     auto reply = qobject_cast<QModbusReply *>(sender());
     if (!reply)
         return;
-
+    qDebug("READREADY! (in main thread)");
     if (reply->error() == QModbusDevice::NoError) {
         const QModbusDataUnit unit = reply->result();
         for (uint i = 0; i < unit.valueCount(); i++) {
@@ -393,7 +393,7 @@ void MainWindow::on_pushButton_clicked()  {
             return;
         }
         //poolingProcessor = new MyPoolingClass("A");
-        poolingProcessor->initPooling(this->modbusDevice, &(this->myModel));
+        //poolingProcessor->initPooling(this->modbusDevice, &(this->myModel));
 
         poolingTimer->start();
         poolingProcessor->start();
@@ -405,7 +405,7 @@ void MainWindow::on_pushButton_clicked()  {
         //better not to play with deleting QThread
         poolingTimer->stop();
         // https://forum.qt.io/topic/20539/what-is-the-correct-way-to-stop-qthread/3
-        poolingProcessor->poolingPerformed = true;
+        poolingProcessor->poolingPerformed = false;
         this->ui->pushButton->setText("Start Scanning");
         logToTextBox(tr("Опитування зупинено користувачем"));
         this->processingPerformed = false;
@@ -420,4 +420,20 @@ void MainWindow::externalLogRequest(QString externalLogLine) {
 void MainWindow::processPoolingFinished()  {
     logToTextBox(tr("Тред оголосив про завершення обробки"));
     processingPerformed = false;
+}
+
+void MainWindow::externalReadRequest(QModbusDataUnit theUnit, unsigned int devAddr) {
+    if (auto *reply = modbusDevice->sendReadRequest(theUnit, devAddr )) {
+        if (!reply->isFinished()) {
+            logToTextBox(tr("Чекаємо відповіді на запит читання"));
+            connect(reply, &QModbusReply::finished, this, &MainWindow::readReady);
+        } else {
+            logToTextBox(tr("Відповідь на запит читання прийшла зразу. Це дивно"));
+            delete reply; // broadcast replies return immediately
+        }
+    } else {
+        QString err_line = tr("Read error: ") + modbusDevice->errorString();
+        statusBar()->showMessage(err_line, 5000);
+        logToTextBox(err_line);
+    }
 }
