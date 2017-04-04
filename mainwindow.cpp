@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     deviceConnected(false),
     myModel(0),
 
+    currentDisplayParameter("UnsignedDec"),
     buttonMode(true)  /*make button to work as for start*/
 
 {
@@ -34,6 +35,9 @@ MainWindow::MainWindow(QWidget *parent) :
     myModel.columnHeaders.append(tr("Тип \n структури даних"));
     myModel.columnHeaders.append(tr("Адреса \n структури даних"));
     myModel.columnHeaders.append(tr("Дані"));
+
+    myModel.currentNumberDisplaySetting="UnsignedDec";
+
     ui->tableView->setModel( &myModel );
 
     processingPerformed = false;
@@ -447,6 +451,36 @@ void MainWindow::on_pushButton_clicked()  {
         this->buttonMode = true;
     }
 
+}
+/**
+ * @brief MainWindow::on_actionDisplay_triggered . display dialog with params choice (display option)
+ */
+void MainWindow::on_actionDisplay_triggered()
+{
+    /*
+    //if the scanning has been started before, then stop it. Actually this should be done by user, but let's do it here
+    bool scanningWasRunningBefore = this->processingPerformed;
+    //stop the scan here
+    if (scanningWasRunningBefore == true) {
+        on_pushButton_clicked();
+    }
+    */
+    DialogDisplayParams * displParamsDialog = new DialogDisplayParams(this);
+
+    displParamsDialog->setWindowFlags(displParamsDialog->windowFlags() & ~Qt::WindowContextHelpButtonHint & ~Qt::WindowCloseButtonHint);
+    displParamsDialog->setDisplayParam(this->currentDisplayParameter);
+    displParamsDialog->exec();
+
+    if (displParamsDialog->acceptButtonClicked && !(displParamsDialog->cancelButtonClicked)) {
+        this->currentDisplayParameter = displParamsDialog->returnedParam;
+        myModel.currentNumberDisplaySetting = this->currentDisplayParameter;
+    }
+    /*
+    //start the scan after updating settings, if it has been running before adding rcrd
+    if (scanningWasRunningBefore == true) {
+        on_pushButton_clicked();
+    }
+    */
 }
 
 void MainWindow::externalLogRequest(QString externalLogLine) {

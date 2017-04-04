@@ -28,15 +28,19 @@ SOURCES += main.cpp\
     dialogcomport.cpp \
     dialogrecord.cpp \
     mymodel.cpp \
-    mypoolingclass.cpp
+    mypoolingclass.cpp \
+    dialogdisplayparams.cpp
 
 HEADERS  += mainwindow.h \
     dialogcomport.h \
     dialogrecord.h \
     mymodel.h \
     processingmanager.h \
-    mypoolingclass.h
+    mypoolingclass.h \
+    dialogdisplayparams.h \
+    displaytypes.h
 
 FORMS    += mainwindow.ui \
     dialogcomport.ui \
-    dialogrecord.ui
+    dialogrecord.ui \
+    dialogdisplayparams.ui

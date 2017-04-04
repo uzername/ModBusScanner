@@ -22,6 +22,8 @@ public:
 
     QVector<QString> columnHeaders;
     QVector<rowDataItm> dataItems;
+
+    QString currentNumberDisplaySetting;
     void brandNewAppendData(unsigned int deviceAddrInp, QString structTypeInp, unsigned int structAddrInp);
     /**
      * @brief rowDataItmToString

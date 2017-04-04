@@ -7,6 +7,9 @@
 
 #include "dialogcomport.h"
 #include "dialogrecord.h"
+#include "dialogdisplayparams.h"
+
+#include "displaytypes.h"
 
 #include "mymodel.h"
 
@@ -43,6 +46,9 @@ public:
     bool buttonMode;
 
     void addValueToTable(QModbusDataUnit inpUnit, int serv);
+    QString formalModbusRegTypeToString(QModbusDataUnit::RegisterType inpRegType);
+    QString currentDisplayParameter;
+
 private:
     Ui::MainWindow *ui;
     QModbusClient *modbusDevice;
@@ -56,12 +62,15 @@ private:
 
 private slots:
     void openComPortDialog();
-    void on_pushButtonRead_clicked();
+    void on_pushButtonRead_clicked(); //unused
 
     void readReady();
-    void on_pushButtonWrite_clicked();
+    void on_pushButtonWrite_clicked(); //unused
     void on_pushButtonAdd_clicked();
-    void on_pushButton_clicked();
+    void on_pushButton_clicked(); //start scan action
+
+    void on_actionDisplay_triggered();
+
     void timerHit();
     // these slots process calls from qthread
     void externalLogRequest(QString externalLogLine);

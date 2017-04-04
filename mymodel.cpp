@@ -34,8 +34,36 @@ QVariant MyModel::data(const QModelIndex &index, int role) const
                 return QString("%1").arg(this->dataItems.at(index.row()).dataStructAddress,10);
                 break;
             }
-                case 3: {
-                    return QString("<hex> %1").arg(this->dataItems.at(index.row()).dataStructData, 16);
+                case 3: { //here is the place where the register data are being transformed before display
+                    QString finalStringValue="...";
+                    if (this->currentNumberDisplaySetting == "Hexadecimal") {
+                        finalStringValue = QString("<hex> %1").arg(this->dataItems.at(index.row()).dataStructData, 0, 16);
+                    } else {
+                        if (this->currentNumberDisplaySetting == "UnsignedDec") {
+                            finalStringValue = QString("<dec> %1").arg(this->dataItems.at(index.row()).dataStructData, 0, 10);
+                        } else {
+                            if (this->currentNumberDisplaySetting == "SignedDec") {
+                                union {
+                                    qint16 signedint;
+                                    quint16 unsignedint;
+                                } un;
+                                un.unsignedint = this->dataItems.at(index.row()).dataStructData;
+                                finalStringValue = QString("<sgndec> %1").arg(un.signedint, 0, 10);
+                            } else {
+                                if (this->currentNumberDisplaySetting == "Float") {
+                                    //this might be dangerous and not recommended. float is 4 bytes, our vaulue is 2 bytes. C would not support that.
+                                    //proof: http://stackoverflow.com/questions/11639947/is-type-punning-through-a-union-unspecified-in-c99-and-has-it-become-specified
+                                    union { //these are 4 bytes
+                                        int classicalint;
+                                        float classicalfloat;
+                                    } un2;
+                                    un2.classicalint = this->dataItems.at(index.row()).dataStructData;
+                                    finalStringValue = QString("<float> %1").arg(un2.classicalfloat );
+                                }
+                            }
+                        }
+                    }
+                    return finalStringValue;
                     break;
                 }
             default: {

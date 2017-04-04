@@ -52,6 +52,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="pushButtonRemove">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Remove</string>
              </property>
@@ -97,6 +100,7 @@
      <string>Параметри</string>
     </property>
     <addaction name="actionConnect"/>
+    <addaction name="actionDisplay"/>
    </widget>
    <addaction name="menuCOM"/>
   </widget>
@@ -104,6 +108,11 @@
   <action name="actionConnect">
    <property name="text">
     <string>Підключення</string>
+   </property>
+  </action>
+  <action name="actionDisplay">
+   <property name="text">
+    <string>Відображення</string>
    </property>
   </action>
  </widget>
