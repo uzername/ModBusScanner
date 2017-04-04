@@ -213,7 +213,7 @@ void MainWindow::addValueToTable(QModbusDataUnit inpUnit, int serv)
 {
     bool dataItmFound = false;
     unsigned int rowIndex = /*NAN*/0;
-    foreach (MyModel::rowDataItm theItem, this->myModel) {
+    foreach (MyModel::rowDataItm theItem, this->myModel.dataItems) {
         if (serv == theItem.deviceAddress && inpUnit.startAddress() == theItem.dataStructAddress) {
             dataItmFound = true;
             break;
@@ -224,8 +224,9 @@ void MainWindow::addValueToTable(QModbusDataUnit inpUnit, int serv)
         qDebug("data itm not found (heuristics), returning");
         return;
     }
-    QModelIndex theIndex = myModel.createIndex(rowIndex,3);
-    myModel.setData(&theIndex, inpUnit.value(0), Qt::DisplayRole);
+    QModelIndex theIndex = myModel.index(rowIndex,3);
+
+    myModel.setData(theIndex, QVariant(inpUnit.value(0)), Qt::DisplayRole);
 }
 
 void MainWindow::timerHit()  {

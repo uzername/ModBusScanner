@@ -42,7 +42,7 @@ public:
 
     bool buttonMode;
 
-    void addValueToTable(QModbusDataUnit inpUnit);
+    void addValueToTable(QModbusDataUnit inpUnit, int serv);
 private:
     Ui::MainWindow *ui;
     QModbusClient *modbusDevice;

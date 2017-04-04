@@ -84,13 +84,13 @@ bool MyModel::setData(const QModelIndex &index, const QVariant &value, int role)
 /*we want to set only quint16 value of data*/
 bool MyModel::setData(const QModelIndex &index, const QVariant &value, int role) {
     qDebug ("SETDATA in myModel");
-    if (!index.isValid() ||  index.row() >= RowCount || index.column() >= ColumnCount)
+    if (!index.isValid() ||  index.row() >= rowCount() || index.column() >= columnCount() )
         return false;
     int rowIndex = index.row();
     int columnIndex = index.column();
     rowDataItm theValue = this->dataItems.at(rowIndex);
-    theValue.dataStructData = value;
-    this->dataItems.replace(rowIndex, &theValue);
+    theValue.dataStructData = value.toInt();
+    this->dataItems.replace(rowIndex, theValue);
     return true;
 }
 
