@@ -39,9 +39,10 @@ MainWindow::MainWindow(QWidget *parent) :
     poolingTimer->setInterval(poolingStdTimeout);
     connect(poolingTimer, SIGNAL(timeout()) , this, SLOT(timerHit()));
     poolingProcessor = new MyPoolingClass("A");
-
+    //declare accepting data from MyPoolingClass which runs as thread
     connect(poolingProcessor, SIGNAL(sendStringToLog(QString)), this, SLOT(externalLogRequest(QString)) );
     connect(poolingProcessor, SIGNAL(handmadeFinished()), this, SLOT(processPoolingFinished() ) );
+    connect(poolingProcessor, SIGNAL(delegateSendReadRequest(QModbusDataUnit,uint)), this, SLOT(externalReadRequest(QModbusDataUnit,uint)) );
     //this list is also used in MyPoolingClass
     theReadList = QStringList();
     theReadList<<"CoilFlag"<<"Discrette Input"<<"HoldingRegister"<<"InputRegister";
@@ -392,8 +393,8 @@ void MainWindow::on_pushButton_clicked()  {
             msgBox.exec();
             return;
         }
-        //poolingProcessor = new MyPoolingClass("A");
-        //poolingProcessor->initPooling(this->modbusDevice, &(this->myModel));
+        //creation of pooling processor has been performed earlier, in constructor. Creating instance here breaks signals and slots of pooling processor
+        poolingProcessor->initPooling(this->modbusDevice, &(this->myModel));
 
         poolingTimer->start();
         poolingProcessor->start();
@@ -423,6 +424,7 @@ void MainWindow::processPoolingFinished()  {
 }
 
 void MainWindow::externalReadRequest(QModbusDataUnit theUnit, unsigned int devAddr) {
+    logToTextBox("MainWindow: sending request to port");
     if (auto *reply = modbusDevice->sendReadRequest(theUnit, devAddr )) {
         if (!reply->isFinished()) {
             logToTextBox(tr("Чекаємо відповіді на запит читання"));

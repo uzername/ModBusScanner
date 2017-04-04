@@ -21,7 +21,7 @@ void MyPoolingClass::performPooling()
 {
     foreach (MyModel::rowDataItm modelItm, this->modelPtr->dataItems) {
         //perform polling for each item in model
-        //qDebug("performing polling...");
+        qDebug("performing polling...");
         emit sendStringToLog(QString("performing polling: %1").arg(MyModel::rowDataItmToString(modelItm)));
 
         if (!modbusDevicePtr) {
@@ -49,7 +49,7 @@ void MyPoolingClass::performPooling()
         }
         */
         emit delegateSendReadRequest(immaterialRequest, modelItm.deviceAddress);
-        msleep(requestDelay);
+        //msleep(requestDelay);
         //======================================
         if (poolingPerformed == false) {
             break;
