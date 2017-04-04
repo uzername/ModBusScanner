@@ -214,7 +214,10 @@ void MainWindow::addValueToTable(QModbusDataUnit inpUnit, int serv)
     bool dataItmFound = false;
     unsigned int rowIndex = /*NAN*/0;
     foreach (MyModel::rowDataItm theItem, this->myModel.dataItems) {
-        if (serv == theItem.deviceAddress && inpUnit.startAddress() == theItem.dataStructAddress) {
+
+        if (serv == theItem.deviceAddress
+                && inpUnit.startAddress() == theItem.dataStructAddress
+                && (this->formalModbusRegTypeToString( inpUnit.registerType() ) == theItem.dataStructType) ) {
             dataItmFound = true;
             break;
         }
@@ -469,5 +472,16 @@ void MainWindow::externalReadRequest(QModbusDataUnit theUnit, unsigned int devAd
         QString err_line = tr("Read error: ") + modbusDevice->errorString();
         statusBar()->showMessage(err_line, 5000);
         logToTextBox(err_line);
+    }
+}
+
+QString MainWindow::formalModbusRegTypeToString(QModbusDataUnit::RegisterType inpRegType ) {
+   // see MyPoolingClass::readRequest
+    switch (inpRegType) {
+        case (QModbusDataUnit::Coils): { return "CoilFlag"; break;}
+        case (QModbusDataUnit::DiscreteInputs): { return "Discrete Input"; break;}
+        case (QModbusDataUnit::HoldingRegisters): {return "HoldingRegister"; break;}
+        case (QModbusDataUnit::InputRegisters): {return "InputRegister"; break; }
+        default: {return "Invalid";}
     }
 }
