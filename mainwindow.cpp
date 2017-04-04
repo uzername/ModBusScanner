@@ -208,6 +208,26 @@ void MainWindow::logToTextBox(QString goodMsgForDisplay)
     //this->ui->textEditMain->append("<font face=\"Courier\">"+dateStamp+goodMsgForDisplay+"</font>");
 }
 
+/*be careful, set only one value at a time*/
+void MainWindow::addValueToTable(QModbusDataUnit inpUnit, int serv)
+{
+    bool dataItmFound = false;
+    unsigned int rowIndex = /*NAN*/0;
+    foreach (MyModel::rowDataItm theItem, this->myModel) {
+        if (serv == theItem.deviceAddress && inpUnit.startAddress() == theItem.dataStructAddress) {
+            dataItmFound = true;
+            break;
+        }
+        rowIndex++;
+    }
+    if (dataItmFound == false) {
+        qDebug("data itm not found (heuristics), returning");
+        return;
+    }
+    QModelIndex theIndex = myModel.createIndex(rowIndex,3);
+    myModel.setData(&theIndex, inpUnit.value(0), Qt::DisplayRole);
+}
+
 void MainWindow::timerHit()  {
     //start processing. It may take long time, so a thread might be required
     logToTextBox(tr("Настав час таймера."));
@@ -278,7 +298,10 @@ void MainWindow::readReady() {
                                      .arg(QString::number(unit.value(i),
                                           unit.registerType() <= QModbusDataUnit::Coils ? 10 : 16));
             logToTextBox(entry);
+
             //ui->readValue->addItem(entry);
+            //value has been returned; add here data to table
+            addValueToTable(unit, reply->serverAddress());
         }
     } else if (reply->error() == QModbusDevice::ProtocolError) {
         QString noGoodMessage = tr("Read response error: %1 (Mobus exception: 0x%2)").
