@@ -83,14 +83,22 @@ bool MyModel::setData(const QModelIndex &index, const QVariant &value, int role)
 */
 /*we want to set only quint16 value of data*/
 bool MyModel::setData(const QModelIndex &index, const QVariant &value, int role) {
-    qDebug ("SETDATA in myModel");
+    //qDebug ("SETDATA in myModel");
     if (!index.isValid() ||  index.row() >= rowCount() || index.column() >= columnCount() )
         return false;
     int rowIndex = index.row();
     int columnIndex = index.column();
     rowDataItm theValue = this->dataItems.at(rowIndex);
     theValue.dataStructData = value.toInt();
+
     this->dataItems.replace(rowIndex, theValue);
+
+    //updating view
+    //the best way (see question): http://stackoverflow.com/questions/12893904/automatically-refreshing-a-qtableview-when-data-changed
+    //oth ways: http://www.qtcentre.org/threads/3145-QTableView-How-to-refresh-the-view-after-an-update-of-the-model
+      QModelIndex topLeft = this->index(0, 0);
+      QModelIndex bottomRight = this->index(rowCount() - 1, columnCount() - 1);
+      emit dataChanged(topLeft, bottomRight);
     return true;
 }
 
