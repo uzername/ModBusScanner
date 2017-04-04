@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(poolingTimer, SIGNAL(timeout()) , this, SLOT(timerHit()));
     poolingProcessor = new MyPoolingClass("A");
     //declare accepting data from MyPoolingClass which runs as thread
+    qRegisterMetaType<QModbusDataUnit>("QModbusDataUnit");
     connect(poolingProcessor, SIGNAL(sendStringToLog(QString)), this, SLOT(externalLogRequest(QString)) );
     connect(poolingProcessor, SIGNAL(handmadeFinished()), this, SLOT(processPoolingFinished() ) );
     connect(poolingProcessor, SIGNAL(delegateSendReadRequest(QModbusDataUnit,uint)), this, SLOT(externalReadRequest(QModbusDataUnit,uint)) );
