@@ -14,7 +14,10 @@ MainWindow::MainWindow(QWidget *parent) :
     AllCOMPorts(new QVector<DialogCOMPort::knownCOMports>()),
     modbusDevice(nullptr),
     deviceConnected(false),
-    myModel(0)
+    myModel(0),
+
+    buttonMode(true)  /*make button to work as for start*/
+
 {
     ui->setupUi(this);
 
@@ -387,7 +390,7 @@ void MainWindow::on_pushButtonAdd_clicked()  {
 }
 /*run (or stop) scanning process*/
 void MainWindow::on_pushButton_clicked()  {
-    if (this->processingPerformed == false) {
+    if (/* this->processingPerformed == false */ this->buttonMode==true) {
         if (this->myModel.rowCount()==0) {
             QMessageBox msgBox;
             msgBox.setText(tr("Потрібен хоча б один елемент відслідковування"));
@@ -402,6 +405,8 @@ void MainWindow::on_pushButton_clicked()  {
 
         this->ui->pushButton->setText("Stop Scanning");
         this->processingPerformed = true;
+
+        this->buttonMode=false;
     } else {
         //delete poolingProcessor;
         //better not to play with deleting QThread
@@ -411,6 +416,8 @@ void MainWindow::on_pushButton_clicked()  {
         this->ui->pushButton->setText("Start Scanning");
         logToTextBox(tr("Опитування зупинено користувачем"));
         this->processingPerformed = false;
+
+        this->buttonMode = true;
     }
 
 }

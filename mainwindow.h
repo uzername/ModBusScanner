@@ -40,6 +40,7 @@ public:
     QTimer *poolingTimer;
     unsigned int poolingStdTimeout;
 
+    bool buttonMode;
 
 private:
     Ui::MainWindow *ui;
@@ -50,6 +51,7 @@ private:
     bool recalculateCOMPorts;
 
     bool deviceConnected;
+
 
 private slots:
     void openComPortDialog();
