@@ -105,6 +105,7 @@
     </property>
     <addaction name="actionConnect"/>
     <addaction name="actionDisplay"/>
+    <addaction name="actionGenTimer"/>
    </widget>
    <addaction name="menuCOM"/>
   </widget>
@@ -117,6 +118,11 @@
   <action name="actionDisplay">
    <property name="text">
     <string>Відображення</string>
+   </property>
+  </action>
+  <action name="actionGenTimer">
+   <property name="text">
+    <string>Заг. таймер</string>
    </property>
   </action>
  </widget>

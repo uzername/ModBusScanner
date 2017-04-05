@@ -7,6 +7,7 @@
 #include <QDateTime>
 #include <QFontDatabase>
 #include <QMessageBox>
+#include <QInputDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -481,6 +482,35 @@ void MainWindow::on_actionDisplay_triggered()
         on_pushButton_clicked();
     }
     */
+}
+/**
+ * @brief MainWindow::on_actionGenTimer_triggered . opens a polling timer setting dialog window
+ */
+void MainWindow::on_actionGenTimer_triggered()  {
+    qDebug("opening timer polling dialog");
+    bool ok;
+    int newValueTimer = QInputDialog::getInt(this, tr("Таймер заг. циклу опитування"), tr("Очікувана тривалість одної ітерації (мс)"),
+                                             this->poolingStdTimeout,
+                                             500,10000,1,&ok);
+    if (ok) {
+        logToTextBox(QString("Змінюється значення загального таймера. Старе значення - %1 ; Нове значення - %2").arg(this->poolingStdTimeout).arg(newValueTimer));
+        //setting timer's value
+        //if the scanning has been started before then stop it. Actually this should be done by user, but let's do it here
+        bool scanningWasRunningBefore = this->processingPerformed;
+        //stop the scan here
+        if (scanningWasRunningBefore == true) {
+            on_pushButton_clicked();
+        }
+        this->poolingStdTimeout = newValueTimer;
+
+        this->poolingTimer->setInterval(/*newValueTimer*/this->poolingStdTimeout);
+
+        //start the scan after adding, if it has been running before adding rcrd
+        if (scanningWasRunningBefore == true) {
+            on_pushButton_clicked();
+        }
+
+    }
 }
 
 void MainWindow::externalLogRequest(QString externalLogLine) {

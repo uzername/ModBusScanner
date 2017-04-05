@@ -70,6 +70,7 @@ private slots:
     void on_pushButton_clicked(); //start scan action
 
     void on_actionDisplay_triggered();
+    void on_actionGenTimer_triggered();
 
     void timerHit();
     // these slots process calls from qthread
