@@ -1,9 +1,18 @@
 ==ModBus Functional Software==
-Read data from registers of device, which is connected over RS232 line to RS485 line.
+
+Read data from registers of device, which is connected over RS232 line to RS485 line. Scans data from a defined set of registers in realtime mode. 
+
+User adds registers to lookup table, connects to device, sets timer's timeout. General Timer's timeout defines the time of scanning the whole table of registers. Avoid setting too low time between scanning cycles.
 
 Contains a table with selection of registers which are being monitored. They are being rescanned after a given time limit.
 
 Program was created using QT 5.8, works on Windows, and utilizes QModBusDevice library (QSerialBus).
+
+The program works like this: in cycle we send queries to modbus device, using sendReadRequest standard routine. This query creates a new thread. The program waits for response in an asynchronous manner. A valid response contains address of datastructure, its type and expected value.
+
+Typically sendReadRequest fires up almost immediately. It takes more time to see the response. Once again, due to multithreading nature of sending read request routine, it cannot be strictly predicted when response comes. Adding sleep time between queries probably improves stability.
+
+There is also another (hardcoded) timeout: response wait time from modbus device.
 
 ===ASCOM===
 

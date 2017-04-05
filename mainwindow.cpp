@@ -491,7 +491,7 @@ void MainWindow::on_actionGenTimer_triggered()  {
     bool ok;
     int newValueTimer = QInputDialog::getInt(this, tr("Таймер заг. циклу опитування"), tr("Очікувана тривалість одної ітерації (мс)"),
                                              this->poolingStdTimeout,
-                                             500,10000,1,&ok);
+                                             5,10000,1,&ok);
     if (ok) {
         logToTextBox(QString("Змінюється значення загального таймера. Старе значення - %1 ; Нове значення - %2").arg(this->poolingStdTimeout).arg(newValueTimer));
         //setting timer's value
