@@ -105,7 +105,9 @@
     </property>
     <addaction name="actionConnect"/>
     <addaction name="actionDisplay"/>
+    <addaction name="separator"/>
     <addaction name="actionGenTimer"/>
+    <addaction name="actionQueryTimer"/>
    </widget>
    <addaction name="menuCOM"/>
   </widget>
@@ -123,6 +125,11 @@
   <action name="actionGenTimer">
    <property name="text">
     <string>Заг. таймер</string>
+   </property>
+  </action>
+  <action name="actionQueryTimer">
+   <property name="text">
+    <string>Таймер між запитами</string>
    </property>
   </action>
  </widget>

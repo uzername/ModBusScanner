@@ -59,7 +59,8 @@ private:
 
     bool deviceConnected;
 
-
+    bool requestDelayUsed_internal;
+    int requestDelay_internal;
 private slots:
     void openComPortDialog();
     void on_pushButtonRead_clicked(); //unused

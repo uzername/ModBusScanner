@@ -3,6 +3,7 @@
 MyPoolingClass::MyPoolingClass(QString s) : name(s)
 {
 this->requestDelay = 100;
+this->requestDelayUsed = true;
 }
 
 void MyPoolingClass::run()
@@ -49,7 +50,9 @@ void MyPoolingClass::performPooling()
         }
         */
         emit delegateSendReadRequest(immaterialRequest, modelItm.deviceAddress);
-        //msleep(requestDelay);
+        if (requestDelayUsed == true) {
+            msleep(requestDelay);
+        }
         //======================================
         if (poolingPerformed == false) {
             break;

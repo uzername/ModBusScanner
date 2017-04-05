@@ -18,8 +18,10 @@ MainWindow::MainWindow(QWidget *parent) :
     myModel(0),
 
     currentDisplayParameter("UnsignedDec"),
-    buttonMode(true)  /*make button to work as for start*/
+    buttonMode(true),  /*make button to work as for start*/
 
+    requestDelayUsed_internal(true),
+    requestDelay_internal(10)
 {
     ui->setupUi(this);
 
@@ -49,6 +51,11 @@ MainWindow::MainWindow(QWidget *parent) :
     poolingProcessor = new MyPoolingClass("A");
     //declare accepting data from MyPoolingClass which runs as thread
     qRegisterMetaType<QModbusDataUnit>("QModbusDataUnit");
+
+    //MyPoolingClass has internal init of these params in constructor
+    poolingProcessor->requestDelay = this->requestDelay_internal;
+    poolingProcessor->requestDelayUsed = this->requestDelayUsed_internal;
+
     connect(poolingProcessor, SIGNAL(sendStringToLog(QString)), this, SLOT(externalLogRequest(QString)) );
     connect(poolingProcessor, SIGNAL(handmadeFinished()), this, SLOT(processPoolingFinished() ) );
     connect(poolingProcessor, SIGNAL(delegateSendReadRequest(QModbusDataUnit,uint)), this, SLOT(externalReadRequest(QModbusDataUnit,uint)) );
@@ -504,6 +511,34 @@ void MainWindow::on_actionGenTimer_triggered()  {
         this->poolingStdTimeout = newValueTimer;
 
         this->poolingTimer->setInterval(/*newValueTimer*/this->poolingStdTimeout);
+
+        //start the scan after adding, if it has been running before adding rcrd
+        if (scanningWasRunningBefore == true) {
+            on_pushButton_clicked();
+        }
+
+    }
+}
+void MainWindow::on_actionQueryTimer_triggered() {
+    qDebug("opening interquery timing param dialog");
+    bool ok;
+    int newValueTimer = QInputDialog::getInt(this, tr("Очікування між запитами"), tr("Тривалість затримки \n між відправкою запитів (мс)"),
+                                             this->requestDelay_internal,
+                                             0,5000,1,&ok);
+    if (ok) {
+        bool newValueTimerUsed = (this->requestDelay_internal == 0);
+        logToTextBox(QString("Змінюється значення затримки між запитами. Старе значення - %1 ; Нове значення - %2. Використання затримки: %3").arg(this->requestDelay_internal).arg(newValueTimer).arg(newValueTimerUsed) );
+        //if the scanning has been started before then stop it. Actually this should be done by user, but let's do it here
+        bool scanningWasRunningBefore = this->processingPerformed;
+        //stop the scan here
+        if (scanningWasRunningBefore == true) {
+            on_pushButton_clicked();
+        }
+
+        this->requestDelayUsed_internal = newValueTimerUsed;
+        this->requestDelay_internal = newValueTimer;
+        this->poolingProcessor->requestDelayUsed = this->requestDelayUsed_internal;
+        this->poolingProcessor->requestDelay = this->requestDelay_internal;
 
         //start the scan after adding, if it has been running before adding rcrd
         if (scanningWasRunningBefore == true) {

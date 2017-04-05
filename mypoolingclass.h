@@ -21,8 +21,9 @@ public:
     /**
      * @brief requestDelay . Because modbus requires some delay between queries,
      * we should give it capability to recover between queries. This value represents time delay in ms as int (that's how QT processes it)
-     * actually it depends on baud rate (3.5 symbols), but let's keep it simple.
+     * actually it depends on baud rate (3.5 symbols), but let's keep it simple. Might be important for low timings
      */
+    bool requestDelayUsed;
     int requestDelay;
     QModbusDataUnit readRequest(MyModel::rowDataItm modelItmParm);
 signals:
