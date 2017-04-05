@@ -49,6 +49,8 @@ public:
     QString formalModbusRegTypeToString(QModbusDataUnit::RegisterType inpRegType);
     QString currentDisplayParameter;
 
+public slots:
+    void on_actionQueryTimer_triggered();
 private:
     Ui::MainWindow *ui;
     QModbusClient *modbusDevice;

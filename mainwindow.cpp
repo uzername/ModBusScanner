@@ -91,7 +91,7 @@ void MainWindow::openComPortDialog()
 {
     DialogCOMPort *connectdialog = new DialogCOMPort(this);
     // http://stackoverflow.com/questions/81627/how-can-i-hide-delete-the-help-button-on-the-title-bar-of-a-qt-dialog
-    connectdialog->setWindowFlags(connectdialog->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    connectdialog->setWindowFlags(connectdialog->windowFlags() & ~Qt::WindowContextHelpButtonHint & ~Qt::WindowCloseButtonHint);
 
     //see http://stackoverflow.com/questions/18147038/passing-object-by-reference-in-c and http://stackoverflow.com/a/18147466
     connectdialog->setComPorts(recalculateCOMPorts, (this->AllCOMPorts));
@@ -526,7 +526,7 @@ void MainWindow::on_actionQueryTimer_triggered() {
                                              this->requestDelay_internal,
                                              0,5000,1,&ok);
     if (ok) {
-        bool newValueTimerUsed = (this->requestDelay_internal == 0);
+        bool newValueTimerUsed = (this->requestDelay_internal != 0);
         logToTextBox(QString("Змінюється значення затримки між запитами. Старе значення - %1 ; Нове значення - %2. Використання затримки: %3").arg(this->requestDelay_internal).arg(newValueTimer).arg(newValueTimerUsed) );
         //if the scanning has been started before then stop it. Actually this should be done by user, but let's do it here
         bool scanningWasRunningBefore = this->processingPerformed;
