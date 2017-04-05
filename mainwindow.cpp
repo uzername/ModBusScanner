@@ -151,8 +151,9 @@ void MainWindow::connectDevice(DialogCOMPort::Settings inp_settings) {
         modbusDevice->setConnectionParameter(QModbusDevice::SerialStopBitsParameter,
             inp_settings.stopBits);
 
-        modbusDevice->setTimeout(1000);
-        modbusDevice->setNumberOfRetries(3);
+        modbusDevice->setTimeout(inp_settings.responseTime);
+        modbusDevice->setNumberOfRetries(inp_settings.numberOfRetries);
+
         //connect device
         if (!modbusDevice->connectDevice()) {
             QString errorLine = tr("Не вийшло: ") + modbusDevice->errorString();

@@ -152,6 +152,10 @@ void DialogCOMPort::defineSettingsFromFields() {
     }
     //port
     m_settings.portAddr = this->ui->comboBox->currentText();
+    //number of retries
+    m_settings.numberOfRetries = this->ui->spinBoxRetries->value();
+    //timeout
+    m_settings.responseTime = this->ui->spinBoxTimeout->value();
 }
 
 void DialogCOMPort::setSettings(DialogCOMPort::Settings inp_settings) {
@@ -193,6 +197,9 @@ void DialogCOMPort::setSettings(DialogCOMPort::Settings inp_settings) {
     default:
         break;
     }
+    this->ui->spinBoxRetries->setValue(inp_settings.numberOfRetries);
+    this->ui->spinBoxTimeout->setValue(inp_settings.responseTime);
+
 }
 
 void DialogCOMPort::setComPorts(bool inp_recalculate, QVector<knownCOMports> *inp_allCOMports) {
