@@ -134,7 +134,11 @@
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QSpinBox" name="spinBoxRetries"/>
+     <widget class="QSpinBox" name="spinBoxRetries">
+      <property name="toolTip">
+       <string>the number of retries a client will perform before a request fails. The default value is set to 3.</string>
+      </property>
+     </widget>
     </item>
     <item row="1" column="0">
      <widget class="QLabel" name="label_7">
@@ -145,6 +149,9 @@
     </item>
     <item row="1" column="1">
      <widget class="QSpinBox" name="spinBoxTimeout">
+      <property name="toolTip">
+       <string>The timeout is used by the client to determine how long it waits for a response from the server. If the response is not received within the required timeout, the TimeoutError is set.</string>
+      </property>
       <property name="minimum">
        <number>50</number>
       </property>
