@@ -668,11 +668,12 @@ void MainWindow::customMenuRequested(QPoint pos)
     int selectedRow = index.row(); int selectedCol = index.column();
     if ((selectedRow > -1) && (selectedCol > -1)) {
         QMenu *menu=new QMenu(this);
-        QAction* writeAction = new QAction("Записати...", this);
-        QAction* takeawayAction = new QAction("Прибрати...", this);
+        QAction* writeAction = new QAction(tr("Записати..."), this);
+        QAction* takeawayAction = new QAction(tr("Прибрати..."), this);
         menu->addAction(writeAction);
         menu->addAction(takeawayAction);
         connect(writeAction, &QAction::triggered, this, &MainWindow::writeActionProcessor);
+        connect(takeawayAction, &QAction::triggered, this, &MainWindow::removeActionProcessor);
 
         menu->popup(this->ui->tableView->viewport()->mapToGlobal(pos));
     }
@@ -704,6 +705,22 @@ void MainWindow::writeActionProcessor()
         if ((writeRequestDialog->acceptButtonClicked == false) && (writeRequestDialog->cancelButtonClicked == true)) {
 
         }
+    }
+}
+//remove itm menu action
+void MainWindow::removeActionProcessor()  {
+    bool scanningWasRunningBefore = this->processingPerformed;
+    //stop the scan here
+    if (scanningWasRunningBefore == true) {
+        on_pushButton_clicked();
+    }
+
+    myModel.removeRow(index.row());
+    myModel.dataItems.remove(index.row());
+
+    //restore scan process if it was done before
+    if (scanningWasRunningBefore == true) {
+        on_pushButton_clicked();
     }
 }
 

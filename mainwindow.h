@@ -72,6 +72,7 @@ private slots:
     // https://forum.qt.io/topic/31233/how-to-create-a-custom-context-menu-for-qtableview/3
     void customMenuRequested(QPoint pos);
     void writeActionProcessor();
+    void removeActionProcessor();
 
     void openComPortDialog();
     void on_pushButtonRead_clicked(); //unused
