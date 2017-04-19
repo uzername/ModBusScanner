@@ -192,19 +192,20 @@ QModbusDataUnit* MainWindow::constructReadRequest(QModbusDataUnit::RegisterType 
  * construct write request for operating. real values will be defined later, not here
  * @return
  */
-QModbusDataUnit* MainWindow::constructWriteRequest(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp){
+QModbusDataUnit* MainWindow::constructWriteRequest(QString regTypeInpValue, quint16 dataRegValue, unsigned int regNumberInp){
+/*
     QModbusDataUnit::RegisterType regTypeInternal;
     //theReadList<<"CoilFlag"<<"Discrette Input"<<"HoldingRegister"<<"InputRegister";
-    if (regTypeInp == "CoilFlag") {
+    if (regTypeInpValue == "CoilFlag") {
         regTypeInternal = QModbusDataUnit::RegisterType::Coils;
     } else {
-        if (regTypeInp == "Discrette Input") {
+        if (regTypeInpValue == "Discrette Input") {
             regTypeInternal = QModbusDataUnit::RegisterType::DiscreteInputs;
         } else {
-            if (regTypeInp == "HoldingRegister") {
+            if (regTypeInpValue == "HoldingRegister") {
                 regTypeInternal = QModbusDataUnit::RegisterType::HoldingRegisters;
             } else {
-                if (regTypeInp  == "InputRegister") {
+                if (regTypeInpValue  == "InputRegister") {
                     regTypeInternal = QModbusDataUnit::RegisterType::InputRegisters;
                 } else {
                     regTypeInternal = QModbusDataUnit::RegisterType::Invalid;
@@ -212,9 +213,13 @@ QModbusDataUnit* MainWindow::constructWriteRequest(QString regTypeInp, quint16 d
             }
         }
     }
+
     //QVector<quint16> newData = new QVector(); newData.append(dataRegValue);
-    QModbusDataUnit * retValue = new QModbusDataUnit(regTypeInternal,regNumberInp,1);
-    retValue->setValue(0,dataRegValue);
+    QModbusDataUnit *retValue = new QModbusDataUnit(regTypeInternal,regNumberInp,1);
+    //retValue->setValue(0,dataRegValue);
+    return retValue;
+*/
+    return NULL;
 }
 /*
 QModbusDataUnit* MainWindow::constructWriteRequest(QModbusDataUnit::RegisterType inp_regtype)
@@ -240,13 +245,12 @@ QModbusDataUnit* MainWindow::constructWriteRequest(QModbusDataUnit::RegisterType
  * @param deviceAddrInp
  */
 void MainWindow::sendWriteRequestToDevice(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp, unsigned int deviceAddrInp) {
-    //pause execution before calling
     bool scanningWasRunningBefore = this->processingPerformed;
     //stop the scan here
     if (scanningWasRunningBefore == true) {
         on_pushButton_clicked();
     }
-
+    logToTextBox(regTypeInp);
 
     if (deviceConnected == false) {
         QMessageBox msgBox;
@@ -257,7 +261,31 @@ void MainWindow::sendWriteRequestToDevice(QString regTypeInp, quint16 dataRegVal
     logToTextBox(tr("Запуск запиту на запис (пристрій: %1 номер-регістра: %2 тип-регістра: %3 значення: %4)")
                    .arg(deviceAddrInp).arg(regNumberInp).arg(regTypeInp).arg(dataRegValue));
 
-    QModbusDataUnit* writeUnit = constructWriteRequest(regTypeInp,dataRegValue,regNumberInp);
+    //QModbusDataUnit* writeUnit = constructWriteRequest(regTypeInp,dataRegValue,regNumberInp);
+    //========constructing write request. previous statement was failing on passing string parameter
+    QModbusDataUnit::RegisterType regTypeInternal;
+    //theReadList<<"CoilFlag"<<"Discrette Input"<<"HoldingRegister"<<"InputRegister";
+    if (regTypeInp == "CoilFlag") {
+        regTypeInternal = QModbusDataUnit::RegisterType::Coils;
+    } else {
+        if (regTypeInp == "Discrette Input") {
+            regTypeInternal = QModbusDataUnit::RegisterType::DiscreteInputs;
+        } else {
+            if (regTypeInp == "HoldingRegister") {
+                regTypeInternal = QModbusDataUnit::RegisterType::HoldingRegisters;
+            } else {
+                if (regTypeInp  == "InputRegister") {
+                    regTypeInternal = QModbusDataUnit::RegisterType::InputRegisters;
+                } else {
+                    regTypeInternal = QModbusDataUnit::RegisterType::Invalid;
+                }
+            }
+        }
+    }
+    QModbusDataUnit *writeUnit = new QModbusDataUnit(regTypeInternal,regNumberInp,1);
+    //add write data
+    writeUnit->setValue(0, dataRegValue);
+    //-----------------------------------
     if (writeUnit == NULL) {
         logToTextBox(tr("Запит на запис НЕ було відправлено"));
         return;
@@ -285,7 +313,6 @@ void MainWindow::sendWriteRequestToDevice(QString regTypeInp, quint16 dataRegVal
     } else {
         statusBar()->showMessage(tr("Write error: ") + modbusDevice->errorString(), 5000);
     }
-
 
     //restore scan process if it was done before
     if (scanningWasRunningBefore == true) {
@@ -671,7 +698,7 @@ void MainWindow::writeActionProcessor()
         unsigned int registerNumWrite = writeRequestDialog->dataStructAddress;
         QString registerTypeWrite = writeRequestDialog->dataStructType;
 
-        sendWriteRequestToDevice(registerTypeWrite,dataWrite,registerNumWrite,deviceAddrWrite);
+        sendWriteRequestToDevice(registerTypeWrite, dataWrite,registerNumWrite,deviceAddrWrite);
 
     } else {
         if ((writeRequestDialog->acceptButtonClicked == false) && (writeRequestDialog->cancelButtonClicked == true)) {

@@ -32,7 +32,7 @@ public:
     void connectDevice(DialogCOMPort::Settings inp_settings);
     QModbusDataUnit *constructReadRequest(QModbusDataUnit::RegisterType inp_regtype);
     //QModbusDataUnit *constructWriteRequest(QModbusDataUnit::RegisterType inp_regtype);
-    QModbusDataUnit* constructWriteRequest(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp);
+    QModbusDataUnit* constructWriteRequest(QString regTypeInpValue, quint16 dataRegValue, unsigned int regNumberInp);
 
     MyModel myModel;
     QStringList theReadList; //names of register types which might be read.
