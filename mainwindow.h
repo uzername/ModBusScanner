@@ -51,7 +51,7 @@ public:
     QString formalModbusRegTypeToString(QModbusDataUnit::RegisterType inpRegType);
     QString currentDisplayParameter;
 
-    void sendWriteRequest(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp, unsigned int deviceAddrInp);
+    void sendWriteRequestToDevice(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp, unsigned int deviceAddrInp);
 public slots:
     void on_actionQueryTimer_triggered();
 private:

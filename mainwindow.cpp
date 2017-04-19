@@ -233,13 +233,13 @@ QModbusDataUnit* MainWindow::constructWriteRequest(QModbusDataUnit::RegisterType
 }
 */
 /**
- * @brief MainWindow::sendWriteRequest - send write request wrapper.
+ * @brief MainWindow::sendWriteRequestToDevice - send write request wrapper.
  * @param regTypeInp
  * @param dataRegValue
  * @param regNumberInp
  * @param deviceAddrInp
  */
-void MainWindow::sendWriteRequest(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp, unsigned int deviceAddrInp) {
+void MainWindow::sendWriteRequestToDevice(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp, unsigned int deviceAddrInp) {
     //pause execution before calling
     bool scanningWasRunningBefore = this->processingPerformed;
     //stop the scan here
@@ -254,20 +254,21 @@ void MainWindow::sendWriteRequest(QString regTypeInp, quint16 dataRegValue, unsi
         msgBox.exec();
         return;
     }
-    logToTextBox(tr("Запуск запиту на запис"));
-    /*
-    QModbusDataUnit* writeUnit = constructWriteRequset
+    logToTextBox(tr("Запуск запиту на запис (пристрій: %1 номер-регістра: %2 тип-регістра: %3 значення: %4)")
+                   .arg(deviceAddrInp).arg(regNumberInp).arg(regTypeInp).arg(dataRegValue));
+
+    QModbusDataUnit* writeUnit = constructWriteRequest(regTypeInp,dataRegValue,regNumberInp);
     if (writeUnit == NULL) {
         logToTextBox(tr("Запит на запис НЕ було відправлено"));
         return;
     }
-*/
-/*
-    if (auto *reply = modbusDevice->sendWriteRequest(*writeUnit, ui->spinBoxDeviceAddrWrite->value() )) {
+
+    if (auto *reply = modbusDevice->sendWriteRequest(*writeUnit, deviceAddrInp )) {
         if (!reply->isFinished()) {
+            //weird inline decl ahead
             connect(reply, &QModbusReply::finished, this, [this, reply]() {
                 if (reply->error() == QModbusDevice::ProtocolError) {
-                    QString err_line = tr("Write response error: %1 (Mobus exception: 0x%2)").arg(reply->errorString()).arg(reply->rawResult().exceptionCode(), -1, 16);
+                    QString err_line = tr("Write response error: %1 (Modbus exception: 0x%2)").arg(reply->errorString()).arg(reply->rawResult().exceptionCode(), -1, 16);
                     statusBar()->showMessage(err_line, 5000);
                     logToTextBox(err_line);
                 } else if (reply->error() != QModbusDevice::NoError) {
@@ -284,7 +285,7 @@ void MainWindow::sendWriteRequest(QString regTypeInp, quint16 dataRegValue, unsi
     } else {
         statusBar()->showMessage(tr("Write error: ") + modbusDevice->errorString(), 5000);
     }
-*/
+
 
     //restore scan process if it was done before
     if (scanningWasRunningBefore == true) {
@@ -670,7 +671,7 @@ void MainWindow::writeActionProcessor()
         unsigned int registerNumWrite = writeRequestDialog->dataStructAddress;
         QString registerTypeWrite = writeRequestDialog->dataStructType;
 
-
+        sendWriteRequestToDevice(registerTypeWrite,dataWrite,registerNumWrite,deviceAddrWrite);
 
     } else {
         if ((writeRequestDialog->acceptButtonClicked == false) && (writeRequestDialog->cancelButtonClicked == true)) {
