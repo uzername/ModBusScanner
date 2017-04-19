@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DialogRecord</class>
- <widget class="QDialog" name="DialogRecord">
+ <class>DialogWriteItm</class>
+ <widget class="QDialog" name="DialogWriteItm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>144</height>
+    <width>250</width>
+    <height>190</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -16,18 +16,27 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="windowTitle">
-   <string>Новий запис</string>
+  <property name="minimumSize">
+   <size>
+    <width>250</width>
+    <height>190</height>
+   </size>
   </property>
-  <property name="modal">
-   <bool>false</bool>
+  <property name="maximumSize">
+   <size>
+    <width>250</width>
+    <height>190</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>100</y>
-     <width>341</width>
+     <x>40</x>
+     <y>150</y>
+     <width>161</width>
      <height>32</height>
     </rect>
    </property>
@@ -35,77 +44,71 @@
     <enum>Qt::Horizontal</enum>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel</set>
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QWidget" name="formLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>30</y>
-     <width>379</width>
-     <height>48</height>
+     <x>20</x>
+     <y>10</y>
+     <width>211</width>
+     <height>121</height>
     </rect>
    </property>
-   <layout class="QGridLayout" name="gridLayout_2">
+   <layout class="QFormLayout" name="formLayout">
     <item row="0" column="0">
-     <widget class="QLabel" name="labelAddr">
+     <widget class="QLabel" name="LabelAddr">
       <property name="text">
        <string>Адреса пристрою</string>
       </property>
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QSpinBox" name="spinBoxDeviceAddr">
+     <widget class="QSpinBox" name="SpinBoxAddr">
+      <property name="minimum">
+       <number>1</number>
+      </property>
       <property name="maximum">
        <number>255</number>
-      </property>
-      <property name="value">
-       <number>16</number>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QLabel" name="label">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>Кількість записів</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
-     <widget class="QSpinBox" name="spinBoxRecordNum">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="value">
-       <number>1</number>
       </property>
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QLabel" name="labelRegType">
+     <widget class="QLabel" name="LabelRegType">
       <property name="text">
-       <string>Тип комірки</string>
+       <string>Тип регістру</string>
       </property>
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QComboBox" name="comboBoxType"/>
+     <widget class="QComboBox" name="ComboBoxType"/>
     </item>
-    <item row="1" column="2">
-     <widget class="QLabel" name="labelAddressRegister">
+    <item row="2" column="0">
+     <widget class="QLabel" name="Label">
       <property name="text">
-       <string>Адреса комірки</string>
+       <string>Номер структури</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="3">
-     <widget class="QLineEdit" name="lineEditRegAddr">
-      <property name="inputMethodHints">
-       <set>Qt::ImhDigitsOnly</set>
+    <item row="2" column="1">
+     <widget class="QSpinBox" name="SpinBoxNumber">
+      <property name="maximum">
+       <number>65535</number>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="LabelData">
+      <property name="text">
+       <string>Дані</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QSpinBox" name="SpinBoxData">
+      <property name="maximum">
+       <number>65536</number>
       </property>
      </widget>
     </item>
@@ -117,7 +120,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>DialogRecord</receiver>
+   <receiver>DialogWriteItm</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -133,7 +136,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>DialogRecord</receiver>
+   <receiver>DialogWriteItm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

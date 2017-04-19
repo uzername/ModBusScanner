@@ -74,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->lineEditRegAddrWrite->setValidator(new QIntValidator(0,65535) );
     ui->lineEditData->setValidator(new QIntValidator(0,65535) );
 */
+    connect(this->ui->tableView, SIGNAL(customContextMenuRequested(QPoint)), SLOT(customMenuRequested(QPoint)));
 }
 
 MainWindow::~MainWindow()
@@ -169,10 +170,9 @@ void MainWindow::connectDevice(DialogCOMPort::Settings inp_settings) {
         }
     }
 }
-
+/*
 QModbusDataUnit* MainWindow::constructReadRequest(QModbusDataUnit::RegisterType inp_regtype)  {
     QModbusDataUnit::RegisterType regType = inp_regtype;
-    /*
     bool ok = true;
     int startAddress = this->ui->lineEditRegAddr->text().toInt(&ok, 0);
     if (ok == false) {
@@ -183,17 +183,42 @@ QModbusDataUnit* MainWindow::constructReadRequest(QModbusDataUnit::RegisterType 
     int numberOfEntries = this->ui->spinBoxRecordNum->value();
 
     return new QModbusDataUnit(regType, startAddress, numberOfEntries);
-    */
+
     return NULL;
 }
+*/
 /**
  * @brief MainWindow::constructWriteRequest
  * construct write request for operating. real values will be defined later, not here
  * @return
  */
+QModbusDataUnit* MainWindow::constructWriteRequest(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp){
+    QModbusDataUnit::RegisterType regTypeInternal;
+    //theReadList<<"CoilFlag"<<"Discrette Input"<<"HoldingRegister"<<"InputRegister";
+    if (regTypeInp == "CoilFlag") {
+        regTypeInternal = QModbusDataUnit::RegisterType::Coils;
+    } else {
+        if (regTypeInp == "Discrette Input") {
+            regTypeInternal = QModbusDataUnit::RegisterType::DiscreteInputs;
+        } else {
+            if (regTypeInp == "HoldingRegister") {
+                regTypeInternal = QModbusDataUnit::RegisterType::HoldingRegisters;
+            } else {
+                if (regTypeInp  == "InputRegister") {
+                    regTypeInternal = QModbusDataUnit::RegisterType::InputRegisters;
+                } else {
+                    regTypeInternal = QModbusDataUnit::RegisterType::Invalid;
+                }
+            }
+        }
+    }
+    //QVector<quint16> newData = new QVector(); newData.append(dataRegValue);
+    QModbusDataUnit * retValue = new QModbusDataUnit(regTypeInternal,regNumberInp,1);
+    retValue->setValue(0,dataRegValue);
+}
+/*
 QModbusDataUnit* MainWindow::constructWriteRequest(QModbusDataUnit::RegisterType inp_regtype)
 {
-    /*
     QModbusDataUnit::RegisterType regType = inp_regtype;
     bool ok = true;
     int startAddress = this->ui->lineEditRegAddrWrite->text().toInt(&ok, 0);
@@ -205,8 +230,66 @@ QModbusDataUnit* MainWindow::constructWriteRequest(QModbusDataUnit::RegisterType
     int numberOfEntries = this->ui->spinBoxRecordNum_2->value();
 
     return new QModbusDataUnit(regType, startAddress, numberOfEntries);
-    */
-    return NULL;
+}
+*/
+/**
+ * @brief MainWindow::sendWriteRequest - send write request wrapper.
+ * @param regTypeInp
+ * @param dataRegValue
+ * @param regNumberInp
+ * @param deviceAddrInp
+ */
+void MainWindow::sendWriteRequest(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp, unsigned int deviceAddrInp) {
+    //pause execution before calling
+    bool scanningWasRunningBefore = this->processingPerformed;
+    //stop the scan here
+    if (scanningWasRunningBefore == true) {
+        on_pushButton_clicked();
+    }
+
+
+    if (deviceConnected == false) {
+        QMessageBox msgBox;
+        msgBox.setText("Підключення НЕ виконано.\n Потрібно підключитись до пристрою");
+        msgBox.exec();
+        return;
+    }
+    logToTextBox(tr("Запуск запиту на запис"));
+    /*
+    QModbusDataUnit* writeUnit = constructWriteRequset
+    if (writeUnit == NULL) {
+        logToTextBox(tr("Запит на запис НЕ було відправлено"));
+        return;
+    }
+*/
+/*
+    if (auto *reply = modbusDevice->sendWriteRequest(*writeUnit, ui->spinBoxDeviceAddrWrite->value() )) {
+        if (!reply->isFinished()) {
+            connect(reply, &QModbusReply::finished, this, [this, reply]() {
+                if (reply->error() == QModbusDevice::ProtocolError) {
+                    QString err_line = tr("Write response error: %1 (Mobus exception: 0x%2)").arg(reply->errorString()).arg(reply->rawResult().exceptionCode(), -1, 16);
+                    statusBar()->showMessage(err_line, 5000);
+                    logToTextBox(err_line);
+                } else if (reply->error() != QModbusDevice::NoError) {
+                    QString err_line = tr("Write response error: %1 (code: 0x%2)").arg(reply->errorString()).arg(reply->error(), -1, 16);
+                    statusBar()->showMessage(err_line, 5000);
+                    logToTextBox(err_line);
+                }
+                reply->deleteLater();
+            });
+        } else {
+            // broadcast replies return immediately
+            reply->deleteLater();
+        }
+    } else {
+        statusBar()->showMessage(tr("Write error: ") + modbusDevice->errorString(), 5000);
+    }
+*/
+
+    //restore scan process if it was done before
+    if (scanningWasRunningBefore == true) {
+        on_pushButton_clicked();
+    }
 }
 
 void MainWindow::logToTextBox(QString goodMsgForDisplay)
@@ -546,6 +629,53 @@ void MainWindow::on_actionQueryTimer_triggered() {
             on_pushButton_clicked();
         }
 
+    }
+}
+//display context menu on table view
+//https://forum.qt.io/topic/31233/how-to-create-a-custom-context-menu-for-qtableview/3
+void MainWindow::customMenuRequested(QPoint pos)
+{
+    index = this->ui->tableView->indexAt(pos);
+    //qDebug(QString("( %1 ; %2 )").arg(index.column()).arg(index.row()) );
+    int selectedRow = index.row(); int selectedCol = index.column();
+    if ((selectedRow > -1) && (selectedCol > -1)) {
+        QMenu *menu=new QMenu(this);
+        QAction* writeAction = new QAction("Записати...", this);
+        QAction* takeawayAction = new QAction("Прибрати...", this);
+        menu->addAction(writeAction);
+        menu->addAction(takeawayAction);
+        connect(writeAction, &QAction::triggered, this, &MainWindow::writeActionProcessor);
+
+        menu->popup(this->ui->tableView->viewport()->mapToGlobal(pos));
+    }
+}
+//here is performed writing action
+void MainWindow::writeActionProcessor()
+{
+//show dialog
+    //open dialog
+    DialogWriteItm* writeRequestDialog = new DialogWriteItm(this);
+    writeRequestDialog->setWindowFlags(writeRequestDialog->windowFlags() & ~Qt::WindowContextHelpButtonHint & ~Qt::WindowCloseButtonHint);
+        writeRequestDialog->deviceAddress = myModel.dataItems.at(index.row()).deviceAddress;
+        writeRequestDialog->dataStructAddress = myModel.dataItems.at(index.row()).dataStructAddress;
+        writeRequestDialog->dataValue = myModel.dataItems.at(index.row()).dataStructData;
+        writeRequestDialog->dataStructType = myModel.dataItems.at(index.row()).dataStructType;
+        writeRequestDialog->dataEntered();
+    writeRequestDialog->exec();
+    if ((writeRequestDialog->acceptButtonClicked == true) && (writeRequestDialog->cancelButtonClicked == false)) {
+        writeRequestDialog->dataEntered();
+        //we have retrieved data from dialog, now performing write request
+        quint16 dataWrite = writeRequestDialog->dataValue;
+        unsigned int deviceAddrWrite = writeRequestDialog->deviceAddress;
+        unsigned int registerNumWrite = writeRequestDialog->dataStructAddress;
+        QString registerTypeWrite = writeRequestDialog->dataStructType;
+
+
+
+    } else {
+        if ((writeRequestDialog->acceptButtonClicked == false) && (writeRequestDialog->cancelButtonClicked == true)) {
+
+        }
     }
 }
 

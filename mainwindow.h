@@ -8,6 +8,7 @@
 #include "dialogcomport.h"
 #include "dialogrecord.h"
 #include "dialogdisplayparams.h"
+#include "dialogwriteitm.h"
 
 #include "displaytypes.h"
 
@@ -30,7 +31,8 @@ public:
 
     void connectDevice(DialogCOMPort::Settings inp_settings);
     QModbusDataUnit *constructReadRequest(QModbusDataUnit::RegisterType inp_regtype);
-    QModbusDataUnit *constructWriteRequest(QModbusDataUnit::RegisterType inp_regtype);
+    //QModbusDataUnit *constructWriteRequest(QModbusDataUnit::RegisterType inp_regtype);
+    QModbusDataUnit* constructWriteRequest(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp);
 
     MyModel myModel;
     QStringList theReadList; //names of register types which might be read.
@@ -49,6 +51,7 @@ public:
     QString formalModbusRegTypeToString(QModbusDataUnit::RegisterType inpRegType);
     QString currentDisplayParameter;
 
+    void sendWriteRequest(QString regTypeInp, quint16 dataRegValue, unsigned int regNumberInp, unsigned int deviceAddrInp);
 public slots:
     void on_actionQueryTimer_triggered();
 private:
@@ -63,7 +66,13 @@ private:
 
     bool requestDelayUsed_internal;
     int requestDelay_internal;
+
+    QModelIndex index; //current selected index
 private slots:
+    // https://forum.qt.io/topic/31233/how-to-create-a-custom-context-menu-for-qtableview/3
+    void customMenuRequested(QPoint pos);
+    void writeActionProcessor();
+
     void openComPortDialog();
     void on_pushButtonRead_clicked(); //unused
 

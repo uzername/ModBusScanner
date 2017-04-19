@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     dialogrecord.cpp \
     mymodel.cpp \
     mypoolingclass.cpp \
-    dialogdisplayparams.cpp
+    dialogdisplayparams.cpp \
+    dialogwriteitm.cpp
 
 HEADERS  += mainwindow.h \
     dialogcomport.h \
@@ -38,9 +39,11 @@ HEADERS  += mainwindow.h \
     processingmanager.h \
     mypoolingclass.h \
     dialogdisplayparams.h \
-    displaytypes.h
+    displaytypes.h \
+    dialogwriteitm.h
 
 FORMS    += mainwindow.ui \
     dialogcomport.ui \
     dialogrecord.ui \
-    dialogdisplayparams.ui
+    dialogdisplayparams.ui \
+    dialogwriteitm.ui
