@@ -20,3 +20,4 @@ Settings on PC: COM9, 9600 baudrate, No Parity
 LGPL v3
 
 Grab the release: https://www.dropbox.com/s/33zjue7gdrtcl0b/ModbusListenerFinalBuild.rar?dl=1
+(That was the old release,  newer release with better UI capabilities and functional is attached to repository, see RELEASES)
